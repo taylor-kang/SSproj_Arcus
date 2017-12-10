@@ -277,7 +277,9 @@ cache = client.lrange('askhy:asktable_', 0, -1)
 
 ## 3. nGrinder를 통한 Stress test
 ---
-엄밀한 환경을 만들어 놓고 사용한 것이 아니라 결과는 크게 신뢰할 수 없지만, mysql 만 사용할 때보다 arcus-memcached, nbase-arc 를 캐시로 사용하면 향상된 TPS 를 보여주었다. localhost:8080에 접속하여 agent를 다운 받아 run-agent 스크립트를 실행하면 준비가 끝난다.결과는 아래와 같다.  
+엄밀한 환경을 만들어 놓고 사용한 것이 아니라 결과는 크게 신뢰할 수 없지만, mysql 만 사용할 때보다 arcus-memcached, nbase-arc 를 캐시로 사용하면 향상된 TPS 를 보여주었다. localhost:8080에 접속하여 agent를 다운 받아 run-agent 스크립트를 실행하면 준비가 끝난다.  
+데이터 베이스에 존재하는 데이터(레코드)는 약 5000개이며, 5000개의 데이터를 입출력하는 것에 cache를 두었었다.
+결과는 아래와 같다.  
 
 <br /><br/>
 
@@ -323,9 +325,39 @@ https://github.com/naver/arcus-python-client/pulls 에 typo fix를 요청하였�
 ## 6. 프로젝트 진행 과정
 ---
 
+### Verification and Validation
+<br />
+#### Verification  
+프로그래밍 전략으로 Pair Programming을 채택하여 프로젝트를 진행하였다. 이 과정에서 자연스럽게 오류를 발견하고 개선할 수 있었다. 
+구현을 마친 후 Fagan이 제시한 Software Inspection Process을 따라서 해보았다. 
+
+- Planning  
+ 크리에이티브 소프트웨어 랩실을 빌려 코드 검사 계획을 세웠다.
+
+- Overveiw, Individual preparation  
+ Pair programming을 했으므로 이 과정을 생략하였다.
+
+- Inspection meeting  
+코드를 줄 단위로 유심히 읽어내려 가면서 오류를 찾았다. 페어프로그래밍 당시에 서로 찾아준 오류들이 많아 이 과정에서 오류는 발견되지 않았다.
+
+- Rework, Follow-up  
+이 과정에서 오류가 발견되지 않아 변경하지 않았다.
+
+<br /><br/>
+
+#### Validation  
+테스트는 Integration Testing 방식을 채택했다. 구현을 마친 후에 bottom-up 방식으로 Integration Testing하였다. Test code를 따로 준비하지 않고 python 코드 내부에서 5000개의 데이터를 생성하여 테스트 하였다.
+
+- MySQL 컨테이너와 APP 컨테이너간의 통신
+    - MySQL 컨테이너와 APP 컨테이너, Arcus간의 통신
+    - MySQL 컨테이너와 APP 컨테이너, nBase간의 통신
+
+위 세 가지를 순서대로 추가하면서 테스트를 해보았다. `/`가 메세지에 포함되면 작동이 되지 않는 문제가 발생하는데, 그 문제는 예상범위 안의 문제이며, 따로 예외처리를 해줄 것이다.
+
 <br /><br/>
 <br /><br/>
 
 
 ## 7. 결론
 ---
+웹 어플리케이션 제작 프로젝트를 진행해본 적이 없어 많은 시행착오를 겪었다. 하지만 같은 수업을 듣는 학생인 이영수가 기본 웹 어플리케이션을 오픈 소스로 공개하고 과제 방향을 명확하게 집어주어 큰 도움을 받았다.  그리하여 어렵게 오픈 소스를 다뤄본 결과 오픈 소스를 사용하는 것의 중요성을 크게 느낄 수 있었다.  또 많은 사람들이 사용하는 오픈 소스가 왜 많이 사용 되는 지에 대하여 알아가는 것 또한 매우 유익한 과정이었다.
