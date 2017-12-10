@@ -5,10 +5,14 @@
 * 2015004284 강태희  
 * 2015004684 안건주  
 
+<br /><br/>
 
 ## 1.  목표
 ---
 네이버의 오픈소스 프로젝트인 Naver의 OSS(Open Source Software)인 Arcus(Memory Cache Cloud)를 사용해서 샘플 프로젝트에 구현해보고 Arcus 도입의 전/후 간의 성능을 비교한다.
+
+<br /><br/>
+<br /><br/>
 
 ## 2.  Docker Container List
 ---
@@ -25,29 +29,33 @@ Docker 컨테이너 리스트를 확인해보면 프로젝트 실행을 위한 �
 > 7. mysql:5.7 -> mysql container  
 > 8. hyeongseok05/nbase-arc -> nbase-arc container  
 
+<br /><br/>
+
 ### 2.1.  Arcus  
 -------------
 Arcus는 memcached와 ZooKeeper를 기반으로 네이버 (NAVER) 서비스들의 요구 사항을 반영해 개발한 메모리 캐시 클라우드이다. Arcus를 웹서버 또는 데이터베이스 사이에 위치시켜 빠른 응답 및 부하를 줄이기 위한 용도로 사용 할수 있다. Arcus에서 memcached를 확장해서 지원하는 추가 기능 중 ZooKeeper 기반의 cache cloud 관리, Collection 자료구조 (List), B+tree을 중점적으로 사용하여 프로젝트를 진행하였다.  
 Arucs는 Docker Hub의 [ruo91/arcus](https://hub.docker.com/r/ruo91/arcus/)를 가져와 port번호 2181에 연결하여 설치하였다.  
 
+<br /><br/>
+
 다음 사진에서 Arcus에서 관리하는 memcached가 온라인 상태에 있고 zookeeper_list에서 admin을 포함한 memcached 4개가 관리되고 있음을 알수있다.
 > ![Image](/image/zookeeper_list.png)
 
+<br /><br/>
 
-#### 2.1.1. arcus-admin   
+> #### 2.1.1. arcus-admin   
 zookeeper로 운영되는 arcus-memcached 서버  
 <pre><code>$ docker run -d --name="arcus-admin" -h "arcus" ruo91/arcus</code></pre>
 
 
-#### 2.1.2. arcus-memcached1/2/3   
+> #### 2.1.2. arcus-memcached1/2/3   
 zookeeper로 운영되는 arcus-memcached 클라이언트 3개  
 <pre><code>$ docker run -d --name="arcus-memcached-1" -h "memcached-1" ruo91/arcus:memcached
 $ docker run -d --name="arcus-memcached-2" -h "memcached-2" ruo91/arcus:memcached
 $ docker run -d --name="arcus-memcached-3" -h "memcached-3" ruo91/arcus:memcached</code></pre>  
 
+<br /><br/>
 
-
-  
 ### 2.2.  Mysql
 -------------
 웹클라이언트 데이터베이스 관리를 위하여 대표적인 관계형 데이터베이스인  Mysql을 사용하였다.웹클라이언트에서는 DB와의 호환을 위하여 오픈소스 PyMysql을 사용하였다. 
@@ -60,6 +68,7 @@ $ docker run -d --name="arcus-memcached-3" -h "memcached-3" ruo91/arcus:memcache
 
 Mysql을 port번호 3306에 연결하였다.
 
+<br /><br/>
 
 ### 2.3.  Arcus Web Application – 부탁한양 
 -------------
@@ -76,23 +85,26 @@ Flask기반 웹클라이언트로 arcus, mysql DB 와 연동하였다.
   askhy</code></pre>
   
 
+<br /><br/>
 
 ### 2.4.  nGrinder
 -------------
 nGrinder는 네이버의 성능측정 오픈소스이다. 
 mysql, nbase-arc, arcus-memcached 의 성능 측정을 위해 ngrinder 를 사용했다. 
-
 nGrinder를 port번호 8000에 연결하였다.
 
-#### 2.4.1. nGrinder – controller 
+<br /><br/>
+
+> #### 2.4.1. nGrinder – controller 
 성능 테스트를 위한 웹 인터페이스, 테스트 프로세스를 조정 및 대조, 표시 통계 테스트를 할 수 있는 기능을 제공한다.  
 <pre><code>$ docker run -d -v ~/ngrinder-controller:/opt/ngrinder-controller -p 80:80 -p 16001:16001 -p 12000-12009:12000-12009 ngrinder/controller:3.4</code></pre>
 
 
-#### 2.4.1. nGrinder – agent    
+> #### 2.4.1. nGrinder – agent    
 Controller의 명령을 받아 실행에 옮긴다.
 <pre><code>$ docker run -v ~/ngrinder-agent:/opt/ngrinder-agent -d ngrinder/agent:3.4 172.17.0.6:80</code></pre>
 
+<br /><br/>
 
 ### 2.5.  nBase - ARC
 -------------
@@ -102,27 +114,39 @@ nBase-ARC는 Docker Hub의 hyeongseok05/nbase-arc를 가져와 설치하였다.
 
 nBase - ARC를 port번호 6000에 연결하였다.
 
+<br /><br/>
+<br /><br/>
+
 ## 3. nGrinder를 통한 Stress test
 ---
 엄밀한 환경을 만들어 놓고 사용한 것이 아니라 결과는 크게 신뢰할 수 없지만, mysql 만 사용할 때보다 arcus-memcached, nbase-arc 를 캐시로 사용하면 향상된 TPS 를 보여주었다. localhost:8080에 접속하여 agent를 다운 받아 run-agent 스크립트를 실행하면 준비가 끝난다.결과는 아래와 같다.  
-### 3.1.  MySQL Stress test  
--------------
-MySQL만 사용하여 쿼리하는 페이지(대조군)는 최고 TPS가 3.2로 나타났다.
-> ![Image](/image/mysql_stress.png)  
 
-### 3.2.  MySQL + Arcus 도입 후 Stress test 
+<br /><br/>
+
+> ### 3.1.  MySQL Stress test  
 -------------
-Arcus를 MySQL의 캐시로 사용하는 페이지는 최고 TPS가 4.3으로 나타났다. 약 34%의 성능 향상을 보여주었으며, 테스트 처음 캐시가 비었을 때는 낮았던 성능이 점차로 증가하여 안정화되는 모습을 볼 수 있다.
+MySQL만 사용하여 쿼리하는 페이지는 최고 TPS가 2.9로 나타났다.
+![Image](/image/mysql_stress.png)  
+
+> ### 3.2.  MySQL + Arcus 도입 후 Stress test 
+-------------
+Arcus를 MySQL의 캐시로 사용하는 페이지는 최고 TPS가 4.3으로 나타났다. 약 48%의 성능 향상을 보여주었으며, 테스트 처음 캐시가 비었을 때는 낮았던 성능이 점차로 증가하여 안정화되는 모습을 볼 수 있다.
 (캐시된 데이터의 성능과 캐시되지 않은 일반 상황의 성능비교, TPS 성능비교, 캐시로 인한 DBMS 트래픽 감소정도) 
-> ![Image](/image/arcus_stress.png)  
+![Image](/image/arcus_stress.png)  
 
-### 3.3.  MySQL + nBase-ARC 도입 후 Stress test 
+> ### 3.3.  MySQL + nBase-ARC 도입 후 Stress test 
 -------------
-nBase-ARC를 캐시로 사용하는 페이지는 최고 TPS가 %으로 나타났다. 약 %%%의 성능 향상으로 Arcus보다는 낮지만 여전히 뚜렷한 수치를 나타내었다. 마찬가지로 처음에 낮았던 성능이 얼마 후 안정화되는 모습을 보여준다.
-> ![Image](/image/.png)  
+nBase-ARC를 캐시로 사용하는 페이지는 최고 TPS가 3.3으로 나타났다. 약 13%의 성능 향상으로 Arcus보다는 낮지만 여전히 뚜렷한 수치를 나타내었다. 마찬가지로 처음에 낮았던 성능이 얼마 후 안정화되는 모습을 보여준다.
+![Image](/image/nbase_stress.png)  
+
+<br /><br/>
+<br /><br/>
 
 ## 4. Open Source Contribution
 ---
+
+<br /><br/>
+<br /><br/>
 
 ## 5. 사용한 Open Source License  
 ---
@@ -133,8 +157,15 @@ nBase-ARC를 캐시로 사용하는 페이지는 최고 TPS가 %으로 나타났
 * prev/askhy - [MIT License](link)
 * mysql 
 
+<br /><br/>
+<br /><br/>
+
 ## 6. 결론 
 ---
+
+<br /><br/>
+<br /><br/>
+
 
 ## 7. 역할분담
 ---
