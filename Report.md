@@ -9,7 +9,7 @@
 네이버의 오픈소스 프로젝트인 Naver의 OSS(Open Source Software)인 Arcus(Memory Cache Cloud)를 사용해서 샘플 프로젝트에 구현해보고 Arcus 도입의 전/후 간의 성능을 비교한다.
 
 # 2.  Docker Container List
-## 2.1. Arcus
+## 2.1.  Arcus  
 * arcus-admin   
 zookeeper로 운영되는 arcus-memcached 서버  
 <pre><code>$ docker run -d --name="arcus-admin" -h "arcus" ruo91/arcus</code></pre>
@@ -21,7 +21,7 @@ $ docker run -d --name="arcus-memcached-2" -h "memcached-2" ruo91/arcus:memcache
 $ docker run -d --name="arcus-memcached-3" -h "memcached-3" ruo91/arcus:memcached</code></pre>  
 
   
-## 2.2. Mysql
+## 2.2.  Mysql
 <pre><code> $ docker run -d \
   -e MYSQL_ROOT_PASSWORD=root \
   -e MYSQL_DATABASE=test \
@@ -29,7 +29,7 @@ $ docker run -d --name="arcus-memcached-3" -h "memcached-3" ruo91/arcus:memcache
   mysql:5.7</code></pre>  
 대표적인 관계형 데이터베이스 
 
-## 2.3. Arcus Web Application – 부탁한양 
+## 2.3.  Arcus Web Application – 부탁한양 
 <pre><code> $ docker run -p 8080:80 \
   --link mysql:mysql_host \
   -e DATABASE_HOST=mysql_host \
@@ -44,7 +44,7 @@ Flask기반 웹클라이언트
 arcus 와 연동 
 mysql DB와 연동 
 
-## 2.4. nGrinder
+## 2.4.  nGrinder
 nGrinder는 네이버의 성능측정 오픈소스이다. 
 mysql, nbase-arc, arcus-memcached 의 성능 측정을 위해 ngrinder 를 사용했다. 
 
@@ -58,7 +58,7 @@ Controller의 명령을 받아 실행에 옮긴다.
 <pre><code>$ docker run -v ~/ngrinder-agent:/opt/ngrinder-agent -d ngrinder/agent:3.4 172.17.0.6:80</code></pre>
 
 
-## 2.5. nBase - ARC
+## 2.5.  nBase - ARC
 서버 한대로 처리할 수 없는 대규모 서비스의 경우 분산 시스템이 필요하다. nBASE-ARC의 경우 이러한 서비스를 처리하기 위한 플랫폼으로 Redis가 제공하는 고성능 DB의 장점을 지닌 서비스 중단 없이 장비를 추가할 수 있는 확장성을 지닌 클러스터이다. Redis API를 그대로 활용할 수 있기 때문에 이를 활용하여 테스트 및 모니터링을 수행하였다.
 
 # 3. nGrinder를 통한 Stress test
