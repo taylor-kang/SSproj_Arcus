@@ -117,8 +117,38 @@ Flask기반 웹클라이언트로 arcus, mysql DB 와 연동하였다.
 <br /><br/>
 
 > #### 2.5.1. arcus를 통한 성능개선 
-웹페이지 메인화면에 출력되는 ask data를 arcus를 통해 캐싱하였다. 처음 데이터 접근시에는 데이터를 캐싱하고 이후 데이터를 접근할때는 arcus 캐시에서 가져오므로 성능을 개선시킬수 있었다.
+웹페이지 메인화면에 출력되는 ask data를 arcus를 통해 캐싱하였다. 처음 데이터 접근시에는 데이터를 캐싱하고 이후 데이터를 접근할때는 arcus 캐시에서 가져오므로 성능을 개선시킬수 있었다. 
+[arcus-python-client](https://github.com/naver/arcus-python-client)에 `test.py`코드를 참고하여 list type의 자료형을 관리하는 방법을 찾았다.
+~~~python
+#####################################################################################################
+#
+# TEST 2: list
+#
+#####################################################################################################
+ret = client.lop_create('test:list_1', ArcusTranscoder.FLAG_STRING, timeout)
+print(ret.get_result())
+assert ret.get_result() == True
 
+items = ['item 1', 'item 2', 'item 3', 'item 4', 'item 5', 'item 6']
+
+for item in items:
+	ret = client.lop_insert('test:list_1', -1, item)
+	print(ret.get_result())
+	assert ret.get_result() == True
+
+ret = client.lop_get('test:list_1', (0, -1))
+print(ret.get_result())
+assert ret.get_result() == items
+
+ret = client.lop_get('test:list_1', (2, 4))
+print(ret.get_result())
+assert ret.get_result() == items[2:4+1]
+
+ret = client.lop_get('test:list_1', (1, -2))
+print(ret.get_result())
+assert ret.get_result() == items[1:-2+1]
+
+~~~
 
 > #### 2.5.2. nBase-arc를 통한 성능개선  
 
