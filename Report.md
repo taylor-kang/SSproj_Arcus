@@ -9,8 +9,12 @@
 네이버의 오픈소스 프로젝트인 Naver의 OSS(Open Source Software)인 Arcus(Memory Cache Cloud)를 사용해서 샘플 프로젝트에 구현해보고 Arcus 도입의 전/후 간의 성능을 비교한다.
 
 # 2.  Docker Container List
+Docker 컨테이너 리스트를 확인
+<pre><code>$ docker ps</code></pre>
+![Image](/image/docker ps.png)
 ## 2.1.  Arcus  
-Arcus는 memcached와 ZooKeeper를 기반으로 네이버 (NAVER) 서비스들의 요구 사항을 반영해 개발한 메모리 캐시 클라우드이다
+Arcus는 memcached와 ZooKeeper를 기반으로 네이버 (NAVER) 서비스들의 요구 사항을 반영해 개발한 메모리 캐시 클라우드이다. Arcus를 웹서버 또는 데이터베이스 사이에 위치시켜 빠른 응답 및 부하를 줄이기 위한 용도로 사용 할수 있다. Arcus에서 memcached를 확장해서 지원하는 추가 기능 중 ZooKeeper 기반의 cache cloud 관리, Collection 자료구조 (List), B+tree을 중점적으로 사용하여 프로젝트를 진행하였다.  
+
 Arucs는 Docker Hub의 ruo91/arcus를 가져와 설치하였다.
 * arcus-admin   
 zookeeper로 운영되는 arcus-memcached 서버  
@@ -66,15 +70,23 @@ nBase-ARC는 Docker Hub의 hyeongseok05/nbase-arc를 가져와 설치하였다.
 <pre><code>$ docker run -p 6000:6000 -d --name=test hyeongseok05/nbase-arc</code></pre> 
 
 # 3. nGrinder를 통한 Stress test
-엄밀한 환경을 만들어 놓고 사용한 것이 아니라 결과는 크게 신뢰할 수 없지만, mysql 만 사용할 때보다 arcus-memcached, nbase-arc 를 캐시로 사용하면 향상된 TPS 를 보여주었다. 결과는 아래와 같다.  
-* Arcus 도입 전 Stress test
+엄밀한 환경을 만들어 놓고 사용한 것이 아니라 결과는 크게 신뢰할 수 없지만, mysql 만 사용할 때보다 arcus-memcached, nbase-arc 를 캐시로 사용하면 향상된 TPS 를 보여주었다. localhost:8080에 접속하여 agent를 다운 받아 run-agent 스크립트를 실행하면 준비가 끝난다.결과는 아래와 같다.  
+## 3.1.  MySQL Stress test  
+MySQL만 사용하여 쿼리하는 페이지(대조군)는 최고 TPS가 3.2로 나타났다.
+![Image](/image/mysql_stress.png)  
 
-* Arcus 도입 후 Stress test 
+## 3.2.  MySQL + Arcus 도입 후 Stress test  
+Arcus를 MySQL의 캐시로 사용하는 페이지는 최고 TPS가 4.3으로 나타났다. 약 34%의 성능 향상을 보여주었으며, 테스트 처음 캐시가 비었을 때는 낮았던 성능이 점차로 증가하여 안정화되는 모습을 볼 수 있다.
 (캐시된 데이터의 성능과 캐시되지 않은 일반 상황의 성능비교, TPS 성능비교, 캐시로 인한 DBMS 트래픽 감소정도) 
+![Image](/image/arcus_stress.png)  
 
-# 4. Open Source Contribution 
+## 3.3.  MySQL + nBase-ARC 도입 후 Stress test  
+nBase-ARC를 캐시로 사용하는 페이지는 최고 TPS가 %으로 나타났다. 약 %%%의 성능 향상으로 Arcus보다는 낮지만 여전히 뚜렷한 수치를 나타내었다. 마찬가지로 처음에 낮았던 성능이 얼마 후 안정화되는 모습을 보여준다.
+![Image](/image/.png)  
 
-# 5. 사용한 Open Source License
+# 4. Open Source Contribution
+
+# 5. 사용한 Open Source License  
 * arcus
 * ngrinder
 * docker
