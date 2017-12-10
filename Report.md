@@ -22,9 +22,23 @@ $ docker run -d --name="arcus-memcached-3" -h "memcached-3" ruo91/arcus:memcache
 
   
 ## 2.2 Mysql
+<pre><code> $ docker run -d \
+  -e MYSQL_ROOT_PASSWORD=root \
+  -e MYSQL_DATABASE=test \
+  --name mysql \
+  mysql:5.7</code></pre>  
 대표적인 관계형 데이터베이스 
 
 ## 2.3 Arcus Web Application – 부탁한양 
+<pre><code> $ docker run -p 8080:80 \
+  --link mysql:mysql_host \
+  -e DATABASE_HOST=mysql_host \
+  -e DATABASE_USER=root \
+  -e DATABASE_PASS=root \
+  -e DATABASE_NAME=test \
+  --name askhy \
+  askhy</code></pre>
+  
 askhy(부탁한양) https://github.com/Prev/askhy : open source 활용
 Flask기반 웹클라이언트 
 arcus 와 연동 
