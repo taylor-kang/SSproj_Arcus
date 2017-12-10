@@ -2,6 +2,22 @@ from flask import Flask, render_template, request, redirect
 import os
 
 from core.dbdriver import get_db, init_tables
+from core import arcusdriver
+from lib.arcus import *
+
+timeout = 20 #added
+
+
+class bcolors:
+	HEADER = '\033[95m'
+	OKBLUE = '\033[94m'
+	OKGREEN = '\033[92m'
+	WARNING = '\033[93m'
+	FAIL = '\033[91m'
+	ENDC = '\033[0m'
+	BOLD = '\033[1m'
+	UNDERLINE = '\033[4m'
+
 
 app = Flask(__name__)
 
@@ -15,9 +31,77 @@ Show list of `asks`, and cheer count of each ask
 """
 @app.route('/')
 def index():
-	with get_db().cursor() as cursor :
-		cursor.execute("SELECT *, (SELECT COUNT(*) FROM `cheer` WHERE ask_id = ask.id) AS cheer_cnt FROM `ask`")
-		result = cursor.fetchall()
+
+
+	client = arcusdriver.get_client()
+
+	#ret = client.set('test:string1', 'test...', 20)
+	#print(ret.get_result())
+	#assert ret.get_result() == True
+
+	#ret = client.get('test:string1')
+	#print(ret.get_result())
+	#assert ret.get_result() == 'test...'
+
+	success = True
+	cache = client.lop_get('askhy:asktable_',(0, -1)).get_result()
+
+	#print(cache)
+
+	if not cache :
+		success = False
+
+	else :
+		#print(bcolors.OKGREEN + "Cache hit!" + bcolors.ENDC)
+		#print(cache)
+
+		result = []
+
+		from datetime import datetime
+
+		for row in cache :
+			item = row.split("/")
+			result.append((
+				int(item[0]), # id
+				item[1], # message
+				item[2], # ip_address
+				datetime.strptime(item[3], '%Y-%m-%d %H:%M:%S'), # register_time
+				int(item[4]), # cheer_cnt
+			))
+
+	#cache = set()
+	if not success :
+		cache = []
+
+		with get_db().cursor() as cursor :
+			#print(bcolors.WARNING + "Cache not exists. Create cache" + bcolors.ENDC)
+
+			ret = client.lop_create('askhy:asktable_', ArcusTranscoder.FLAG_STRING, timeout)
+			#print(ret)
+
+			cursor.execute("SELECT *, (SELECT COUNT(*) FROM `cheer` WHERE ask_id = ask.id) AS cheer_cnt FROM `ask`")
+			
+			result = cursor.fetchall()
+			#cache2 = list(result)
+			#print(bcolors.OKGREEN + str(len(result)) + bcolors.ENDC)
+
+			for item in result:
+				#print(item)
+
+				data = "%s/%s/%s/%s/%s" % (
+					str(item[0]), # id
+					item[1], # message
+					item[2], # ip_address
+					item[3].strftime("%Y-%m-%d %H:%M:%S"), # register_time
+					str(item[4]), # cheer_cnt
+				)
+
+				#print(bcolors.OKGREEN + data + bcolors.ENDC)
+
+				finish = client.lop_insert('askhy:asktable_', -1, data)
+				#print(finish)
+
+
 
 	return render_template('main.html',
 		dataset=result,
@@ -66,6 +150,27 @@ def add_ask():
 
 	id = conn.insert_id()
 	conn.commit()
+
+	with conn.cursor() as cursor :
+
+		cursor.execute("SELECT * FROM `ask` WHERE id = %s", (id, ))
+		item = cursor.fetchone()
+		client = arcusdriver.get_client()
+		#print(item)
+
+		data = "%s/%s/%s/%s/%s" % (
+		str(item[0]), # id
+		item[1], # message
+		item[2], # ip_address
+		item[3].strftime("%Y-%m-%d %H:%M:%S"), # register_time
+		str(0), # cheer_cnt
+		)
+
+		#print(bcolors.OKGREEN + data + bcolors.ENDC)
+
+		finish = client.lop_insert('askhy:asktable_', -1, data)
+		#print(finish)
+
 
 	return redirect("/#a" + str(id))
 
