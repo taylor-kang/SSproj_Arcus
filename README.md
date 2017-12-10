@@ -118,7 +118,19 @@ Flask기반 웹클라이언트로 arcus, mysql DB 와 연동하였다.
 
 > #### 2.5.1. arcus를 통한 성능개선 
 웹페이지 메인화면에 출력되는 ask data를 arcus를 통해 캐싱하였다. 처음 데이터 접근시에는 데이터를 캐싱하고 이후 데이터를 접근할때는 arcus 캐시에서 가져오므로 성능을 개선시킬수 있었다. 
-[arcus-python-client](https://github.com/naver/arcus-python-client)에 `test.py`코드를 참고하여 list type의 자료형을 관리하는 방법을 찾았다.
+[arcus-python-client](https://github.com/naver/arcus-python-client)에 `test.py`코드를 참고하여 list type의 자료형을 관리하는 방법을 찾았다. 
+<pre><code> docker run -p 8080:80 \
+  --link mysql:mysql_host \
+  -e DATABASE_HOST=mysql_host \
+  -e DATABASE_USER=root \
+  -e DATABASE_PASS=root \
+  -e DATABASE_NAME=test \
+  -e ARCUS_URL=172.17.0.4:2181 \
+  -e ARCUS_SERVICE_CODE=ruo91-cloud \
+  --name askhy \
+  askhy</code></pre>
+
+<br />
 
 ~~~python
 #####################################################################################################
@@ -152,7 +164,7 @@ assert ret.get_result() == items[1:-2+1]
 ~~~
 <br />
 적용시킨 주요 코드 부분이다.
-~~~
+~~~python
 success = True
 	cache = client.lop_get('askhy:asktable_',(0, -1)).get_result()
 
@@ -201,8 +213,17 @@ success = True
 ~~~
 
 > #### 2.5.2. nBase-arc를 통한 성능개선  
-
-
+docker run -p 8080:80 \
+  --link mysql:mysql_host \
+  -e DATABASE_HOST=mysql_host \
+  -e DATABASE_USER=root \
+  -e DATABASE_PASS=root \
+  -e DATABASE_NAME=askhy \
+  -e REDIS_HOST=172.17.0.9 \
+  -e REDIS_PORT=6000 \
+  --name askhy \
+  askhy
+  
 <br /><br/>
 
 <br /><br/>
