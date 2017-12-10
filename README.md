@@ -83,7 +83,15 @@ Flask기반 웹클라이언트로 arcus, mysql DB 와 연동하였다.
   -e DATABASE_NAME=test \
   --name askhy \
   askhy</code></pre>
-  
+
+<br /><br/>
+
+> #### 2.3.1. arcus를 통한 성능개선 
+웹페이지 메인화면에 출력되는 ask data를 arcus를 통해 캐싱하였다. 처음 데이터 접근시에는 데이터를 캐싱하고 이후 데이터를 접근할때는 arcus 캐시에서 가져오므로 성능을 개선시킬수 있었다.
+
+
+> #### 2.3.2. nBase-arc를 통한 성능개선  
+
 
 <br /><br/>
 
