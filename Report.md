@@ -10,6 +10,8 @@
 
 # 2.  Docker Container List
 ## 2.1.  Arcus  
+Arcus는 memcached와 ZooKeeper를 기반으로 네이버 (NAVER) 서비스들의 요구 사항을 반영해 개발한 메모리 캐시 클라우드이다
+Arucs는 Docker Hub의 ruo91/arcus를 가져와 설치하였다.
 * arcus-admin   
 zookeeper로 운영되는 arcus-memcached 서버  
 <pre><code>$ docker run -d --name="arcus-admin" -h "arcus" ruo91/arcus</code></pre>
@@ -41,14 +43,14 @@ $ docker run -d --name="arcus-memcached-3" -h "memcached-3" ruo91/arcus:memcache
   
 askhy(부탁한양) https://github.com/Prev/askhy : open source 활용
 Flask기반 웹클라이언트 
-arcus 와 연동 
-mysql DB와 연동 
+arcus 와 연동
+mysql DB와 연동
 
 ## 2.4.  nGrinder
 nGrinder는 네이버의 성능측정 오픈소스이다. 
 mysql, nbase-arc, arcus-memcached 의 성능 측정을 위해 ngrinder 를 사용했다. 
 
-* nGrinder – controller   
+* nGrinder – controller   
 성능 테스트를 위한 웹 인터페이스, 테스트 프로세스를 조정 및 대조, 표시 통계 테스트를 할 수 있는 기능을 제공한다.  
 <pre><code>$ docker run -d -v ~/ngrinder-controller:/opt/ngrinder-controller -p 80:80 -p 16001:16001 -p 12000-12009:12000-12009 ngrinder/controller:3.4</code></pre>
 
@@ -59,10 +61,12 @@ Controller의 명령을 받아 실행에 옮긴다.
 
 
 ## 2.5.  nBase - ARC
-서버 한대로 처리할 수 없는 대규모 서비스의 경우 분산 시스템이 필요하다. nBASE-ARC의 경우 이러한 서비스를 처리하기 위한 플랫폼으로 Redis가 제공하는 고성능 DB의 장점을 지닌 서비스 중단 없이 장비를 추가할 수 있는 확장성을 지닌 클러스터이다. Redis API를 그대로 활용할 수 있기 때문에 이를 활용하여 테스트 및 모니터링을 수행하였다.
+서버 한대로 처리할 수 없는 대규모 서비스의 경우 분산 시스템이 필요하다. nBASE-ARC의 경우 이러한 서비스를 처리하기 위한 플랫폼으로 Redis가 제공하는 고성능 DB의 장점을 지닌 서비스 중단 없이 장비를 추가할 수 있는 확장성을 지닌 클러스터이다. Redis API를 그대로 활용할 수 있기 때문에 이를 활용하여 테스트 및 모니터링을 수행하였다.  
+nBase-ARC는 Docker Hub의 hyeongseok05/nbase-arc를 가져와 설치하였다.
+<pre><code>$ docker run -p 6000:6000 -d --name=test hyeongseok05/nbase-arc</code></pre> 
 
 # 3. nGrinder를 통한 Stress test
-엄밀한 환경을 만들어 놓고 사용한 것이 아니라 결과는 크게 신뢰할 수 없지만, mysql 만 사용할 때보다 arcus-memcached, nbase-arc 를 캐시로 사용하면 향상된 TPS 를 보여주었다. 결과는 아래와 같다.
+엄밀한 환경을 만들어 놓고 사용한 것이 아니라 결과는 크게 신뢰할 수 없지만, mysql 만 사용할 때보다 arcus-memcached, nbase-arc 를 캐시로 사용하면 향상된 TPS 를 보여주었다. 결과는 아래와 같다.  
 * Arcus 도입 전 Stress test
 
 * Arcus 도입 후 Stress test 
