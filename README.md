@@ -163,7 +163,7 @@ assert ret.get_result() == items[1:-2+1]
 
 ~~~
 <br />
-적용시킨 주요 코드 부분이다.
+적용시킨 주요 코드 부분이다. `cursor.execute("SELECT *, (SELECT COUNT(*) FROM cheer WHERE ask_id = ask.id) AS cheer_cnt FROM ask”)`이 SQL문을 캐시한 것이다.
 ~~~python
 success = True
 	cache = client.lop_get('askhy:asktable_',(0, -1)).get_result()
@@ -213,7 +213,7 @@ success = True
 ~~~
 
 > #### 2.5.2. nBase-arc를 통한 성능개선  
-docker run -p 8080:80 \
+<pre><code> docker run -p 8080:80 \
   --link mysql:mysql_host \
   -e DATABASE_HOST=mysql_host \
   -e DATABASE_USER=root \
@@ -222,10 +222,56 @@ docker run -p 8080:80 \
   -e REDIS_HOST=172.17.0.9 \
   -e REDIS_PORT=6000 \
   --name askhy \
-  askhy
+  askhy <code /><pre />
   
 <br /><br/>
+nBase의 경우 redis와 호환이 되기 때문에 단지 redis 사용하는 코드를 nBase로 연결 시켜 개선하였다. 적용시킨 주요 코드 부분이다. redis에서 사용하는 `lrange()`함수와 `lpush()`함수가 그대로 사용되었음을 볼 수 있다.
+~~~python
+cache = client.lrange('askhy:asktable_', 0, -1)
 
+
+	if not cache :
+		success = False
+
+	else :
+
+		result = []
+
+		from datetime import datetime
+
+		for row in cache :
+			item = row.decode().split("/")
+			result.append((
+				int(item[0]), # id
+				item[1], # message
+				item[2], # ip_address
+				datetime.strptime(item[3], '%Y-%m-%d %H:%M:%S'), # register_time
+				int(item[4]), # cheer_cnt
+			))
+
+	if not success :
+		cache = []
+
+		with get_db().cursor() as cursor :
+			
+			cursor.execute("SELECT *, (SELECT COUNT(*) FROM `cheer` WHERE ask_id = ask.id) AS cheer_cnt FROM `ask`")
+			
+			result = cursor.fetchall()
+			
+			for item in result:
+				#print(item)
+
+				data = "%s/%s/%s/%s/%s" % (
+					str(item[0]), # id
+					item[1], # message
+					item[2], # ip_address
+					item[3].strftime("%Y-%m-%d %H:%M:%S"), # register_time
+					str(item[4]), # cheer_cnt
+				)
+
+				finish = client.lpush('askhy:asktable_', data)
+				
+~~~ 
 <br /><br/>
 <br /><br/>
 
