@@ -70,30 +70,15 @@ Mysql을 port번호 3306에 연결하였다.
 
 <br /><br/>
 
-### 2.3.  Arcus Web Application – 부탁한양 
+### 2.3.  nBase - ARC
 -------------
-[askhy(부탁한양)](https://github.com/Prev/askhy) open source 활용하였고 port번호 80에 연결하였다.
-Flask기반 웹클라이언트로 arcus, mysql DB 와 연동하였다.
+서버 한대로 처리할 수 없는 대규모 서비스의 경우 분산 시스템이 필요하다. nBASE-ARC의 경우 이러한 서비스를 처리하기 위한 플랫폼으로 Redis가 제공하는 고성능 DB의 장점을 지닌 서비스 중단 없이 장비를 추가할 수 있는 확장성을 지닌 클러스터이다. Redis API를 그대로 활용할 수 있기 때문에 이를 활용하여 테스트 및 모니터링을 수행하였다.  
+nBase-ARC는 Docker Hub의 hyeongseok05/nbase-arc를 가져와 설치하였다.
+<pre><code>$ docker run -p 6000:6000 -d --name=test hyeongseok05/nbase-arc</code></pre> 
 
-<pre><code> $ docker run -p 8080:80 \
-  --link mysql:mysql_host \
-  -e DATABASE_HOST=mysql_host \
-  -e DATABASE_USER=root \
-  -e DATABASE_PASS=root \
-  -e DATABASE_NAME=test \
-  --name askhy \
-  askhy</code></pre>
-
-<br /><br/>
-
-> #### 2.3.1. arcus를 통한 성능개선 
-웹페이지 메인화면에 출력되는 ask data를 arcus를 통해 캐싱하였다. 처음 데이터 접근시에는 데이터를 캐싱하고 이후 데이터를 접근할때는 arcus 캐시에서 가져오므로 성능을 개선시킬수 있었다.
+nBase - ARC를 port번호 6000에 연결하였다.
 
 
-> #### 2.3.2. nBase-arc를 통한 성능개선  
-
-
-<br /><br/>
 
 ### 2.4.  nGrinder
 -------------
@@ -114,13 +99,31 @@ Controller의 명령을 받아 실행에 옮긴다.
 
 <br /><br/>
 
-### 2.5.  nBase - ARC
--------------
-서버 한대로 처리할 수 없는 대규모 서비스의 경우 분산 시스템이 필요하다. nBASE-ARC의 경우 이러한 서비스를 처리하기 위한 플랫폼으로 Redis가 제공하는 고성능 DB의 장점을 지닌 서비스 중단 없이 장비를 추가할 수 있는 확장성을 지닌 클러스터이다. Redis API를 그대로 활용할 수 있기 때문에 이를 활용하여 테스트 및 모니터링을 수행하였다.  
-nBase-ARC는 Docker Hub의 hyeongseok05/nbase-arc를 가져와 설치하였다.
-<pre><code>$ docker run -p 6000:6000 -d --name=test hyeongseok05/nbase-arc</code></pre> 
 
-nBase - ARC를 port번호 6000에 연결하였다.
+### 2.5.  Web Application – 부탁한양 
+-------------
+[askhy(부탁한양)](https://github.com/Prev/askhy) open source 활용하였고 port번호 80에 연결하였다.
+Flask기반 웹클라이언트로 arcus, mysql DB 와 연동하였다.
+
+<pre><code> $ docker run -p 8080:80 \
+  --link mysql:mysql_host \
+  -e DATABASE_HOST=mysql_host \
+  -e DATABASE_USER=root \
+  -e DATABASE_PASS=root \
+  -e DATABASE_NAME=test \
+  --name askhy \
+  askhy</code></pre>
+
+<br /><br/>
+
+> #### 2.5.1. arcus를 통한 성능개선 
+웹페이지 메인화면에 출력되는 ask data를 arcus를 통해 캐싱하였다. 처음 데이터 접근시에는 데이터를 캐싱하고 이후 데이터를 접근할때는 arcus 캐시에서 가져오므로 성능을 개선시킬수 있었다.
+
+
+> #### 2.5.2. nBase-arc를 통한 성능개선  
+
+
+<br /><br/>
 
 <br /><br/>
 <br /><br/>
