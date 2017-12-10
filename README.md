@@ -150,6 +150,55 @@ print(ret.get_result())
 assert ret.get_result() == items[1:-2+1]
 
 ~~~
+<br />
+적용시킨 주요 코드 부분이다.
+~~~
+success = True
+	cache = client.lop_get('askhy:asktable_',(0, -1)).get_result()
+
+	if not cache :
+		success = False
+
+	else :
+		result = []
+
+		from datetime import datetime
+
+		for row in cache :
+			item = row.split("/")
+			result.append((
+				int(item[0]), # id
+				item[1], # message
+				item[2], # ip_address
+				datetime.strptime(item[3], '%Y-%m-%d %H:%M:%S'), # register_time
+				int(item[4]), # cheer_cnt
+			))
+
+	if not success :
+		cache = []
+
+		with get_db().cursor() as cursor :
+			ret = client.lop_create('askhy:asktable_', ArcusTranscoder.FLAG_STRING, timeout)
+			
+			cursor.execute("SELECT *, (SELECT COUNT(*) FROM `cheer` WHERE ask_id = ask.id) AS cheer_cnt FROM `ask`")
+			
+			result = cursor.fetchall()
+			
+			for item in result:
+				#print(item)
+
+				data = "%s/%s/%s/%s/%s" % (
+					str(item[0]), # id
+					item[1], # message
+					item[2], # ip_address
+					item[3].strftime("%Y-%m-%d %H:%M:%S"), # register_time
+					str(item[4]), # cheer_cnt
+				)
+
+				
+				finish = client.lop_insert('askhy:asktable_', -1, data)
+
+~~~
 
 > #### 2.5.2. nBase-arc를 통한 성능개선  
 
