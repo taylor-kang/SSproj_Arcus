@@ -173,12 +173,12 @@ https://github.com/naver/arcus-python-client/pulls 에 typo fix를 요청하였�
 <br /><br/>
 <br /><br/>
 
-## 6. 결론 
+## 6. 프로젝트 진행 과정
 ---
 
 <br /><br/>
 <br /><br/>
 
 
-## 7. 역할분담
+## 7. 결론
 ---
