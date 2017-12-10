@@ -12,9 +12,9 @@
 
 ## 2.  Docker Container List
 ---
-Docker 컨테이너 리스트를 확인한다
+Docker 컨테이너 리스트를 확인해보면 프로젝트 실행을 위한 가지 컨테이너가 실행되고 있음을 볼수 있다.
 <pre><code>$ docker ps</code></pre>
-![Image](/image/docker ps.png)
+>![Image](/image/docker ps.png)
 
 > 1. ruo91/arcus -> arcus admin container  
 > 2. ruo91/arcus-memcached -> arcus client container  
@@ -28,9 +28,11 @@ Docker 컨테이너 리스트를 확인한다
 ### 2.1.  Arcus  
 -------------
 Arcus는 memcached와 ZooKeeper를 기반으로 네이버 (NAVER) 서비스들의 요구 사항을 반영해 개발한 메모리 캐시 클라우드이다. Arcus를 웹서버 또는 데이터베이스 사이에 위치시켜 빠른 응답 및 부하를 줄이기 위한 용도로 사용 할수 있다. Arcus에서 memcached를 확장해서 지원하는 추가 기능 중 ZooKeeper 기반의 cache cloud 관리, Collection 자료구조 (List), B+tree을 중점적으로 사용하여 프로젝트를 진행하였다.  
+Arucs는 Docker Hub의 [ruo91/arcus](https://hub.docker.com/r/ruo91/arcus/)를 가져와 port번호 2181에 연결하여 설치하였다.  
 
-Arucs는 Docker Hub의 ruo91/arcus를 가져와 설치하였다.
-또한  Arcus를 port번호 2181에 연결하였다.
+다음 사진에서 Arcus에서 관리하는 memcached가 온라인 상태에 있고 zookeeper_list에서 admin을 포함한 memcached 4개가 관리되고 있음을 알수있다.
+> ![Image](/image/zookeeper_list.png)
+
 
 #### 2.1.1. arcus-admin   
 zookeeper로 운영되는 arcus-memcached 서버  
@@ -43,9 +45,7 @@ zookeeper로 운영되는 arcus-memcached 클라이언트 3개  
 $ docker run -d --name="arcus-memcached-2" -h "memcached-2" ruo91/arcus:memcached
 $ docker run -d --name="arcus-memcached-3" -h "memcached-3" ruo91/arcus:memcached</code></pre>  
 
-Arcus에서 관리하는 memcached가 온라인 상태에 있고 zookeeper_list에서 admin을 포함한 memcached 4개가 관리되고 있음을 알수있다.
 
-> ![Image](/image/zookeeper_list.png)
 
   
 ### 2.2.  Mysql
