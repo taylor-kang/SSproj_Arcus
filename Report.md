@@ -30,9 +30,12 @@ Docker 컨테이너 리스트를 확인한다
 Arcus는 memcached와 ZooKeeper를 기반으로 네이버 (NAVER) 서비스들의 요구 사항을 반영해 개발한 메모리 캐시 클라우드이다. Arcus를 웹서버 또는 데이터베이스 사이에 위치시켜 빠른 응답 및 부하를 줄이기 위한 용도로 사용 할수 있다. Arcus에서 memcached를 확장해서 지원하는 추가 기능 중 ZooKeeper 기반의 cache cloud 관리, Collection 자료구조 (List), B+tree을 중점적으로 사용하여 프로젝트를 진행하였다.  
 
 Arucs는 Docker Hub의 ruo91/arcus를 가져와 설치하였다.
+또한  Arcus를 port번호 2181에 연결하였다.
+
 #### 2.1.1. arcus-admin   
 zookeeper로 운영되는 arcus-memcached 서버  
 <pre><code>$ docker run -d --name="arcus-admin" -h "arcus" ruo91/arcus</code></pre>
+
 
 #### 2.1.2. arcus-memcached1/2/3   
 zookeeper로 운영되는 arcus-memcached 클라이언트 3개  
@@ -47,15 +50,22 @@ Arcus에서 관리하는 memcached가 온라인 상태에 있고 zookeeper_list�
   
 ### 2.2.  Mysql
 -------------
+웹클라이언트 데이터베이스 관리를 위하여 대표적인 관계형 데이터베이스인  Mysql을 사용하였다.웹클라이언트에서는 DB와의 호환을 위하여 오픈소스 PyMysql을 사용하였다. 
+
 <pre><code> $ docker run -d \
   -e MYSQL_ROOT_PASSWORD=root \
   -e MYSQL_DATABASE=test \
   --name mysql \
   mysql:5.7</code></pre>  
-대표적인 관계형 데이터베이스 
+
+Mysql을 port번호 3306에 연결하였다.
+
 
 ### 2.3.  Arcus Web Application – 부탁한양 
 -------------
+[askhy(부탁한양)](https://github.com/Prev/askhy) open source 활용하였고 port번호 80에 연결하였다.
+Flask기반 웹클라이언트로 arcus, mysql DB 와 연동하였다.
+
 <pre><code> $ docker run -p 8080:80 \
   --link mysql:mysql_host \
   -e DATABASE_HOST=mysql_host \
@@ -65,15 +75,14 @@ Arcus에서 관리하는 memcached가 온라인 상태에 있고 zookeeper_list�
   --name askhy \
   askhy</code></pre>
   
-askhy(부탁한양) https://github.com/Prev/askhy : open source 활용
-Flask기반 웹클라이언트 
-arcus 와 연동
-mysql DB와 연동
+
 
 ### 2.4.  nGrinder
 -------------
 nGrinder는 네이버의 성능측정 오픈소스이다. 
 mysql, nbase-arc, arcus-memcached 의 성능 측정을 위해 ngrinder 를 사용했다. 
+
+nGrinder를 port번호 8000에 연결하였다.
 
 #### 2.4.1. nGrinder – controller 
 성능 테스트를 위한 웹 인터페이스, 테스트 프로세스를 조정 및 대조, 표시 통계 테스트를 할 수 있는 기능을 제공한다.  
@@ -90,6 +99,8 @@ Controller의 명령을 받아 실행에 옮긴다.
 서버 한대로 처리할 수 없는 대규모 서비스의 경우 분산 시스템이 필요하다. nBASE-ARC의 경우 이러한 서비스를 처리하기 위한 플랫폼으로 Redis가 제공하는 고성능 DB의 장점을 지닌 서비스 중단 없이 장비를 추가할 수 있는 확장성을 지닌 클러스터이다. Redis API를 그대로 활용할 수 있기 때문에 이를 활용하여 테스트 및 모니터링을 수행하였다.  
 nBase-ARC는 Docker Hub의 hyeongseok05/nbase-arc를 가져와 설치하였다.
 <pre><code>$ docker run -p 6000:6000 -d --name=test hyeongseok05/nbase-arc</code></pre> 
+
+nBase - ARC를 port번호 6000에 연결하였다.
 
 ## 3. nGrinder를 통한 Stress test
 ---
@@ -115,11 +126,12 @@ nBase-ARC를 캐시로 사용하는 페이지는 최고 TPS가 %으로 나타났
 
 ## 5. 사용한 Open Source License  
 ---
-* arcus
-* ngrinder
-* docker
-* mysql
-* prev/askhy 
+* arcus - [Apache 2.0 License](link)
+* ngrinder - [Apache 2.0 License](link)
+* docker - [Apache 2.0 License](link)
+* PyMySQL - [MIT License](link)
+* prev/askhy - [MIT License](link)
+* mysql 
 
 ## 6. 결론 
 ---
