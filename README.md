@@ -78,6 +78,7 @@ nBase-ARC는 Docker Hub의 hyeongseok05/nbase-arc를 가져와 설치하였다.
 
 nBase - ARC를 port번호 6000에 연결하였다.
 
+<br /><br/>
 
 
 ### 2.4.  nGrinder
@@ -132,6 +133,7 @@ Flask기반 웹클라이언트로 arcus, mysql DB 와 연동하였다.
 
 <br />
 
+
 ~~~python
 #####################################################################################################
 #
@@ -162,7 +164,9 @@ print(ret.get_result())
 assert ret.get_result() == items[1:-2+1]
 
 ~~~
+
 <br />
+
 적용시킨 주요 코드 부분이다. `cursor.execute("SELECT *, (SELECT COUNT(*) FROM cheer WHERE ask_id = ask.id) AS cheer_cnt FROM ask”)`이 SQL문을 캐시한 것이다.
 ~~~python
 success = True
@@ -211,6 +215,7 @@ success = True
 				finish = client.lop_insert('askhy:asktable_', -1, data)
 
 ~~~
+<br /><br/>
 
 > #### 2.5.2. nBase-arc를 통한 성능개선  
 <pre><code> docker run -p 8080:80 \
@@ -325,9 +330,8 @@ https://github.com/naver/arcus-python-client/pulls 에 typo fix를 요청하였�
 ## 6. 프로젝트 진행 과정
 ---
 
-### Verification and Validation
 <br />
-#### Verification  
+> ### 6.1.  Verification  
 프로그래밍 전략으로 Pair Programming을 채택하여 프로젝트를 진행하였다. 이 과정에서 자연스럽게 오류를 발견하고 개선할 수 있었다. 
 구현을 마친 후 Fagan이 제시한 Software Inspection Process을 따라서 해보았다. 
 
@@ -343,14 +347,13 @@ https://github.com/naver/arcus-python-client/pulls 에 typo fix를 요청하였�
 - Rework, Follow-up  
 이 과정에서 오류가 발견되지 않아 변경하지 않았다.
 
-<br /><br/>
-
-#### Validation  
+<br />
+> ### 6.1.  Validation  
 테스트는 Integration Testing 방식을 채택했다. 구현을 마친 후에 bottom-up 방식으로 Integration Testing하였다. Test code를 따로 준비하지 않고 python 코드 내부에서 5000개의 데이터를 생성하여 테스트 하였다.
 
 - MySQL 컨테이너와 APP 컨테이너간의 통신
-    - MySQL 컨테이너와 APP 컨테이너, Arcus간의 통신
-    - MySQL 컨테이너와 APP 컨테이너, nBase간의 통신
+- MySQL 컨테이너와 APP 컨테이너, Arcus간의 통신
+- MySQL 컨테이너와 APP 컨테이너, nBase간의 통신
 
 위 세 가지를 순서대로 추가하면서 테스트를 해보았다. `/`가 메세지에 포함되면 작동이 되지 않는 문제가 발생하는데, 그 문제는 예상범위 안의 문제이며, 따로 예외처리를 해줄 것이다.
 
