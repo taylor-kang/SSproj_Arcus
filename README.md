@@ -304,7 +304,9 @@ Arcus를 MySQL의 캐시로 사용하는 페이지는 평균 TPS가 4.3으로 �
 nBase-ARC를 캐시로 사용하는 페이지는 평균 TPS가 3.3으로 나타났다. 약 13%의 성능 향상으로 Arcus보다는 낮지만 여전히 뚜렷한 수치를 나타내었다. 마찬가지로 처음에 낮았던 성능이 얼마 후 안정화되는 모습을 보여준다.
 ![Image](/image/nbase_stress.png)  
 
-<br /><br/>
+<br />
+성능 비교가 명시적으로 나타나지 않은 이유는 html data 길이 자체가 길어져서 data를 다운로드 받고 처리하는 양이 커졌기 때문으로 사료된다.
+<br/>
 <br /><br/>
 
 ## 4. Open Source Contribution
