@@ -349,6 +349,7 @@ https://github.com/naver/arcus-python-client/pulls 에 typo fix를 요청하였�
 ---
 
 <br />
+
 > ### 6.1.  Verification  
 프로그래밍 전략으로 Pair Programming을 채택하여 프로젝트를 진행하였다. 이 과정에서 자연스럽게 오류를 발견하고 개선할 수 있었다. 
 구현을 마친 후 Fagan이 제시한 Software Inspection Process을 따라서 해보았다. 
@@ -366,7 +367,8 @@ https://github.com/naver/arcus-python-client/pulls 에 typo fix를 요청하였�
 이 과정에서 오류가 발견되지 않아 변경하지 않았다.
 
 <br />
-> ### 6.1.  Validation  
+
+> ### 6.2.  Validation  
 테스트는 Integration Testing 방식을 채택했다. 구현을 마친 후에 bottom-up 방식으로 Integration Testing하였다. Test code를 따로 준비하지 않고 python 코드 내부에서 5000개의 데이터를 생성하여 테스트 하였다.
 
 - MySQL 컨테이너와 APP 컨테이너간의 통신
