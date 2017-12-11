@@ -45,14 +45,20 @@ Arucs는 Docker Hub의 [ruo91/arcus](https://hub.docker.com/r/ruo91/arcus/)를 �
 
 > #### 2.1.1. arcus-admin   
 zookeeper로 운영되는 arcus-memcached 서버  
-<pre><code>$ docker run -d --name="arcus-admin" -h "arcus" ruo91/arcus</code></pre>
+
+```bash
+$ docker run -d --name="arcus-admin" -h "arcus" ruo91/arcus
+```
 
 
 > #### 2.1.2. arcus-memcached1/2/3   
 zookeeper로 운영되는 arcus-memcached 클라이언트 3개  
-<pre><code>$ docker run -d --name="arcus-memcached-1" -h "memcached-1" ruo91/arcus:memcached
+
+```bash
+$ docker run -d --name="arcus-memcached-1" -h "memcached-1" ruo91/arcus:memcached
 $ docker run -d --name="arcus-memcached-2" -h "memcached-2" ruo91/arcus:memcached
-$ docker run -d --name="arcus-memcached-3" -h "memcached-3" ruo91/arcus:memcached</code></pre>  
+$ docker run -d --name="arcus-memcached-3" -h "memcached-3" ruo91/arcus:memcached
+```
 
 <br /><br/>
 
@@ -60,11 +66,13 @@ $ docker run -d --name="arcus-memcached-3" -h "memcached-3" ruo91/arcus:memcache
 -------------
 웹클라이언트 데이터베이스 관리를 위하여 대표적인 관계형 데이터베이스인  Mysql을 사용하였다.웹클라이언트에서는 DB와의 호환을 위하여 오픈소스 PyMysql을 사용하였다. 
 
-<pre><code> $ docker run -d \
+```bash
+$ docker run -d \
   -e MYSQL_ROOT_PASSWORD=root \
   -e MYSQL_DATABASE=test \
   --name mysql \
-  mysql:5.7</code></pre>  
+  mysql:5.7
+```
 
 Mysql을 port번호 3306에 연결하였다.
 
@@ -120,7 +128,10 @@ Flask기반 웹클라이언트로 arcus, mysql DB 와 연동하였다.
 > #### 2.5.1. arcus를 통한 성능개선 
 웹페이지 메인화면에 출력되는 ask data를 arcus를 통해 캐싱하였다. 처음 데이터 접근시에는 데이터를 캐싱하고 이후 데이터를 접근할때는 arcus 캐시에서 가져오므로 성능을 개선시킬수 있었다. 
 [arcus-python-client](https://github.com/naver/arcus-python-client)에 `test.py`코드를 참고하여 list type의 자료형을 관리하는 방법을 찾았다. 
-<pre><code> docker run -p 8080:80 \
+
+
+```bash
+docker run -p 8080:80 \
   --link mysql:mysql_host \
   -e DATABASE_HOST=mysql_host \
   -e DATABASE_USER=root \
@@ -129,9 +140,8 @@ Flask기반 웹클라이언트로 arcus, mysql DB 와 연동하였다.
   -e ARCUS_URL=172.17.0.4:2181 \
   -e ARCUS_SERVICE_CODE=ruo91-cloud \
   --name askhy \
-  askhy</code></pre>
-
-<br />
+  askhy
+```
 
 
 ~~~python
@@ -168,7 +178,7 @@ assert ret.get_result() == items[1:-2+1]
 <br />
 
 적용시킨 주요 코드 부분이다. `cursor.execute("SELECT *, (SELECT COUNT(*) FROM cheer WHERE ask_id = ask.id) AS cheer_cnt FROM ask”)`이 SQL문을 캐시한 것이다.
-~~~python
+```python
 success = True
 	cache = client.lop_get('askhy:asktable_',(0, -1)).get_result()
 
@@ -214,11 +224,13 @@ success = True
 				
 				finish = client.lop_insert('askhy:asktable_', -1, data)
 
-~~~
+```
 <br /><br/>
 
 > #### 2.5.2. nBase-arc를 통한 성능개선  
-<pre><code> docker run -p 8080:80 \
+
+```bash
+docker run -p 8080:80 \
   --link mysql:mysql_host \
   -e DATABASE_HOST=mysql_host \
   -e DATABASE_USER=root \
@@ -227,11 +239,15 @@ success = True
   -e REDIS_HOST=172.17.0.9 \
   -e REDIS_PORT=6000 \
   --name askhy \
-  askhy <code /><pre />
+  askhy
+```
   
 <br /><br/>
+
 nBase의 경우 redis와 호환이 되기 때문에 단지 redis 사용하는 코드를 nBase로 연결 시켜 개선하였다. 적용시킨 주요 코드 부분이다. redis에서 사용하는 `lrange()`함수와 `lpush()`함수가 그대로 사용되었음을 볼 수 있다.
-~~~python
+
+
+```python
 cache = client.lrange('askhy:asktable_', 0, -1)
 
 
@@ -276,7 +292,7 @@ cache = client.lrange('askhy:asktable_', 0, -1)
 
 				finish = client.lpush('askhy:asktable_', data)
 				
-~~~ 
+```
 <br /><br/>
 <br /><br/>
 
